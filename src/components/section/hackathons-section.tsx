@@ -2,7 +2,14 @@
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { DATA } from "@/data/resume";
+import type { ReactNode } from "react";
 import { Timeline, TimelineItem, TimelineConnectItem } from "@/components/timeline";
+
+type HackathonLink = {
+  href: string;
+  title: string;
+  icon: ReactNode;
+};
 
 export default function HackathonsSection() {
   return (
@@ -19,8 +26,7 @@ export default function HackathonsSection() {
           <div className="flex flex-col gap-y-3 items-center justify-center">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">I like building things</h2>
             <p className="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed text-balance text-center">
-              During my time in university, I attended {DATA.hackathons.length}+
-              hackathons. People from around the country would come together and
+              During my time in university, I attended many hackathons. People from around the country would come together and
               build incredible things in 2-3 days. It was eye-opening to see the endless possibilities brought to life by a group of motivated and passionate individuals.
             </p>
           </div>
@@ -56,7 +62,7 @@ export default function HackathonsSection() {
                 )}
                 {hackathon.links && hackathon.links.length > 0 && (
                   <div className="mt-1 flex flex-row flex-wrap items-start gap-2">
-                    {hackathon.links.map((link, idx) => (
+                    {(hackathon.links as readonly HackathonLink[]).map((link, idx) => (
                       <Link
                         href={link.href}
                         key={idx}

@@ -23,10 +23,13 @@ export default function ContactSection() {
         <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
           Get in Touch
         </h2>
-        <p className="mx-auto max-w-lg text-muted-foreground text-balance">
-          Want to chat? Just shoot me a dm{" "}
+        <h4>
+          Mail me at <b>{"prakharpttandon@gmail.com"}</b>
+        </h4>
+        {/* <p className="mx-auto max-w-lg text-muted-foreground text-balance">
+          Want to chat? Just mail me{" "}
           <Link
-            href={DATA.contact.social.X.url}
+            href={DATA.contact.social.email.url}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
@@ -35,7 +38,7 @@ export default function ContactSection() {
           </Link>{" "}
           and I&apos;ll respond whenever I can. I will ignore all
           soliciting.
-        </p>
+        </p> */}
       </div>
     </div>
   );

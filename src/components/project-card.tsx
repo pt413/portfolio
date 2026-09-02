@@ -8,18 +8,26 @@ import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
 
-function ProjectImage({ src, alt }: { src: string; alt: string }) {
+function ProjectImage({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
-    return <div className="w-full h-48 bg-muted" />;
+    return <div className="aspect-video w-full bg-muted" />;
   }
 
   return (
     <img
       src={src}
-      alt={alt}
-      className="w-full h-48 object-cover"
+      alt={`${alt} project overview`}
+      className="aspect-video w-full object-cover"
+      loading="lazy"
+      decoding="async"
       onError={() => setImageError(true)}
     />
   );
@@ -31,7 +39,6 @@ interface Props {
   description: string;
   dates: string;
   tags: readonly string[];
-  link?: string;
   image?: string;
   video?: string;
   links?: readonly {
@@ -48,88 +55,109 @@ export function ProjectCard({
   description,
   dates,
   tags,
-  link,
   image,
   video,
   links,
   className,
 }: Props) {
+  const projectHref = href || "#";
+  const isExternal = projectHref.startsWith("http");
+
   return (
-    <div
+    <article
       className={cn(
-        "flex flex-col h-full border border-border rounded-xl overflow-hidden hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
+        `
+          flex
+          h-full
+          flex-col
+          overflow-hidden
+          rounded-xl
+          border
+          border-border
+          bg-card/40
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:border-foreground/20
+          hover:shadow-xl
+          hover:shadow-black/10
+          hover:ring-2
+          hover:ring-muted
+        `,
         className
       )}
     >
-      <div className="relative shrink-0">
-        <Link
-          href={href || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block"
-        >
-          {video ? (
-            <video
-              src={video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-48 object-cover"
-            />
-          ) : image ? (
-            <ProjectImage src={image} alt={title} />
-          ) : (
-            <div className="w-full h-48 bg-muted" />
-          )}
-        </Link>
-        {links && links.length > 0 && (
-          <div className="absolute top-2 right-2 flex flex-wrap gap-2">
-            {links.map((link, idx) => (
-              <Link
-                href={link.href}
-                key={idx}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Badge
-                  className="flex items-center gap-1.5 text-xs bg-black text-white hover:bg-black/90"
-                  variant="default"
-                >
-                  {link.icon}
-                  {link.type}
-                </Badge>
-              </Link>
-            ))}
-          </div>
+      {/* Complete, unobstructed 16:9 image */}
+      <Link
+        href={projectHref}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="block shrink-0 overflow-hidden border-b border-border"
+        aria-label={`Open ${title}`}
+      >
+        {video ? (
+          <video
+            src={video}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="aspect-video w-full object-cover"
+          />
+        ) : image ? (
+          <ProjectImage src={image} alt={title} />
+        ) : (
+          <div className="aspect-video w-full bg-muted" />
         )}
-      </div>
-      <div className="p-6 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex flex-col gap-1">
-            <h3 className="font-semibold">{title}</h3>
-            <time className="text-xs text-muted-foreground">{dates}</time>
+      </Link>
+
+      <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6">
+        {/* Project title */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-1">
+            <h3 className="text-lg font-semibold tracking-tight">
+              {title}
+            </h3>
+
+            <time className="text-xs text-muted-foreground">
+              {dates}
+            </time>
           </div>
+
           <Link
-            href={href || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            href={projectHref}
+            target={isExternal ? "_blank" : undefined}
+            rel={isExternal ? "noopener noreferrer" : undefined}
+            className="
+              shrink-0
+              rounded-md
+              p-1.5
+              text-muted-foreground
+              transition-colors
+              hover:bg-muted
+              hover:text-foreground
+              focus-visible:outline-none
+              focus-visible:ring-2
+              focus-visible:ring-ring
+            "
             aria-label={`Open ${title}`}
           >
-            <ArrowUpRight className="h-4 w-4" aria-hidden />
+            <ArrowUpRight className="size-4" aria-hidden />
           </Link>
         </div>
-        <div className="text-xs flex-1 prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
+
+        {/* Description */}
+        <div className="prose max-w-full flex-1 text-pretty font-sans text-sm leading-relaxed text-muted-foreground dark:prose-invert">
           <Markdown>{description}</Markdown>
         </div>
-        {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-auto">
+
+        {/* Technologies */}
+        {tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
             {tags.map((tag) => (
               <Badge
                 key={tag}
-                className="text-[11px] font-medium border border-border h-6 w-fit px-2"
+                className="h-6 w-fit border border-border px-2 text-[11px] font-medium"
                 variant="outline"
               >
                 {tag}
@@ -137,7 +165,46 @@ export function ProjectCard({
             ))}
           </div>
         )}
+
+        {/* Project links moved below image */}
+        {links && links.length > 0 && (
+          <div className="mt-auto flex flex-wrap gap-2 border-t border-border pt-4">
+            {links.map((projectLink) => {
+              const linkIsExternal =
+                projectLink.href.startsWith("http");
+
+              return (
+                <Link
+                  href={projectLink.href}
+                  key={`${title}-${projectLink.type}`}
+                  target={linkIsExternal ? "_blank" : undefined}
+                  rel={
+                    linkIsExternal
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
+                >
+                  <Badge
+                    className="
+                      flex
+                      h-8
+                      items-center
+                      gap-1.5
+                      px-3
+                      text-xs
+                      transition-colors
+                    "
+                    variant="secondary"
+                  >
+                    {projectLink.icon}
+                    {projectLink.type}
+                  </Badge>
+                </Link>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
+    </article>
   );
 }
